@@ -10,15 +10,15 @@ const OFFLINE_CACHE = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css',
-  // Cache all local images
-  '/images/laptop-pro.jpg',
-  '/images/mouse-inalambrico.jpg',
-  '/images/teclado-mecanico.jpg',
-  '/images/monitor-4k.jpg',
-  '/images/hub-usb-c.jpg',
-  '/images/webcam-hd.jpg',
-  '/images/lampara-escritorio.jpg',
-  '/images/soporte-telefono.jpg'
+  // Cache all local images from backend
+  'https://apppwa-1.onrender.com/images/laptop-pro.jpg',
+  'https://apppwa-1.onrender.com/images/mouse-inalambrico.jpg',
+  'https://apppwa-1.onrender.com/images/teclado-mecanico.jpg',
+  'https://apppwa-1.onrender.com/images/monitor-4k.jpg',
+  'https://apppwa-1.onrender.com/images/hub-usb-c.jpg',
+  'https://apppwa-1.onrender.com/images/webcam-hd.jpg',
+  'https://apppwa-1.onrender.com/images/lampara-escritorio.jpg',
+  'https://apppwa-1.onrender.com/images/soporte-telefono.jpg'
 ];
 
 // Install event - cache everything
