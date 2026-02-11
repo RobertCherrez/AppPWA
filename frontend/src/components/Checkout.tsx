@@ -41,7 +41,10 @@ const Checkout: React.FC = () => {
       const response = await orderService.createOrder(orderRequest);
       
       // Verificar si es una respuesta offline del Service Worker
-      if (response && typeof response === 'object' && 'offline' in response) {
+      console.log('Response from API:', response);
+      
+      if (response && typeof response === 'object' && 'offline' in response && response.offline === true) {
+        console.log('Detected offline response:', response);
         setOrderPlaced(true);
         setIsOfflineOrder(true);
         clearCart();
@@ -53,6 +56,8 @@ const Checkout: React.FC = () => {
       setIsOfflineOrder(false);
       clearCart();
     } catch (err: any) {
+      console.log('Error in checkout:', err);
+      
       // Verificar si es un error offline
       if (err.message && err.message.includes('offline')) {
         setOrderPlaced(true);

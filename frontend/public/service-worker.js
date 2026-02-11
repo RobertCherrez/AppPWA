@@ -40,15 +40,20 @@ self.addEventListener('fetch', event => {
         .catch(() => {
           console.log('POST request failed offline:', event.request.url);
           // Return a mock success response for offline checkout
-          return new Response(JSON.stringify({
+          const offlineResponse = {
             success: false,
             message: 'Pedido guardado localmente. Se sincronizará cuando haya conexión.',
             offline: true
-          }), {
+          };
+          
+          return new Response(JSON.stringify(offlineResponse), {
             status: 200,
             statusText: 'OK',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization'
             }
           });
         })
