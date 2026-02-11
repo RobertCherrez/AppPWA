@@ -29,6 +29,20 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
     navigator.serviceWorker.register(swUrl)
       .then(registration => {
         console.log('Service worker registered successfully: ', registration);
+        
+        // Check for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New worker is available, refresh the page
+                console.log('New service worker available, refreshing...');
+                window.location.reload();
+              }
+            });
+          }
+        });
       })
       .catch(error => {
         console.error('Service worker registration failed:', error);
