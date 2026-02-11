@@ -1,71 +1,58 @@
-// Enhanced service worker for PWA caching
-const CACHE_NAME = 'ecommerce-pwa-v2';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/static/css/main.07748c58.css',
-  '/static/js/main.e4aaa702.js',
-  '/manifest.json',
-  '/favicon.ico',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
-  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'
-];
+// Ultra-robust service worker for complete offline functionality
+const CACHE_NAME = 'ecommerce-pwa-v3';
 
-// Install event - cache all resources
+// Install event - cache everything
 self.addEventListener('install', event => {
   console.log('Service Worker: Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Service Worker: Caching files');
-        return cache.addAll(urlsToCache);
+        console.log('Service Worker: Caching app shell');
+        return cache.addAll([
+          '/',
+          '/index.html',
+          '/manifest.json',
+          '/favicon.ico'
+        ]);
       })
-      .then(() => {
-        console.log('Service Worker: Installation complete');
-        return self.skipWaiting();
-      })
+      .then(() => self.skipWaiting())
   );
 });
 
-// Fetch event - serve from cache first, then network
+// Fetch event - cache everything dynamically
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Cache hit - return response
+        // Return cached version if available
         if (response) {
-          console.log('Service Worker: Serving from cache:', event.request.url);
+          console.log('Serving from cache:', event.request.url);
           return response;
         }
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest)
+        // Otherwise, fetch from network
+        return fetch(event.request)
           .then(response => {
-            // Check if valid response
+            // Check if response is valid
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
             // Clone the response
             const responseToCache = response.clone();
-
-            // Cache the response for future requests
+            
+            // Cache the response
             caches.open(CACHE_NAME)
               .then(cache => {
-                console.log('Service Worker: Caching new resource:', event.request.url);
+                console.log('Caching:', event.request.url);
                 cache.put(event.request, responseToCache);
               });
-
+            
             return response;
           })
           .catch(() => {
-            // If fetch fails (offline), try to serve from cache
-            console.log('Service Worker: Network failed, trying cache for:', event.request.url);
+            // If network fails, try to serve from cache
+            console.log('Network failed, serving from cache:', event.request.url);
             return caches.match(event.request);
           });
       })
@@ -76,29 +63,28 @@ self.addEventListener('fetch', event => {
 self.addEventListener('activate', event => {
   console.log('Service Worker: Activating...');
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Service Worker: Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-    .then(() => {
-      console.log('Service Worker: Activation complete');
-      return self.clients.claim();
-    })
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => self.clients.claim())
   );
 });
 
-// Handle offline fallback
+// Handle navigation fallback
 self.addEventListener('fetch', event => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
         .catch(() => {
+          console.log('Navigation failed, serving index.html from cache');
           return caches.match('/index.html');
         })
     );
