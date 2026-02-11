@@ -56,6 +56,14 @@ const ProductList: React.FC = () => {
                 alt={product.name}
                 className="card-img-top"
                 style={{ height: '200px', objectFit: 'cover' }}
+                onError={(e) => {
+                  console.error('Image failed to load:', product.imageUrl);
+                  console.error('Full src:', `/images/${product.imageUrl.replace('/images/', '')}`);
+                  e.currentTarget.src = '/images/placeholder.jpg';
+                }}
+                onLoad={() => {
+                  console.log('Image loaded successfully:', product.imageUrl);
+                }}
               />
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{product.name}</h5>
