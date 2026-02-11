@@ -1,12 +1,19 @@
-// Smart service worker for online/offline functionality
-const CACHE_NAME = 'ecommerce-pwa-smart';
+// Production-ready service worker for complete PWA functionality
+const CACHE_NAME = 'ecommerce-pwa-final';
 
-// Essential resources to cache
-const ESSENTIAL_CACHE = [
+// Cache essential app shell
+const APP_SHELL = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.ico'
+];
+
+// Cache external resources
+const EXTERNAL_RESOURCES = [
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
+  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'
 ];
 
 self.addEventListener('install', event => {
@@ -14,8 +21,8 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Service Worker: Caching essential resources');
-        return cache.addAll(ESSENTIAL_CACHE);
+        console.log('Service Worker: Caching app shell and external resources');
+        return cache.addAll([...APP_SHELL, ...EXTERNAL_RESOURCES]);
       })
       .then(() => self.skipWaiting())
   );
@@ -25,13 +32,13 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // If we have a cached response, use it
+        // Return cached version if available
         if (response) {
           console.log('Serving from cache:', event.request.url);
           return response;
         }
         
-        // Otherwise, try network
+        // Otherwise, fetch from network
         return fetch(event.request)
           .then(response => {
             // Cache successful responses for offline use
@@ -47,7 +54,7 @@ self.addEventListener('fetch', event => {
           })
           .catch(() => {
             // If network fails, try cache as fallback
-            console.log('Network failed, trying cache fallback:', event.request.url);
+            console.log('Network failed, serving from cache:', event.request.url);
             return caches.match(event.request);
           });
       })
