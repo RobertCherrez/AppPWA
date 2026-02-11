@@ -1,8 +1,8 @@
-// Complete service worker for full offline functionality
-const CACHE_NAME = 'ecommerce-pwa-v4';
+// Service Worker optimized for API caching
+const CACHE_NAME = 'ecommerce-pwa-v5';
 
-// Resources to cache immediately
-const STATIC_CACHE = [
+// Static resources to cache
+const STATIC_RESOURCES = [
   '/',
   '/index.html',
   '/manifest.json',
@@ -12,49 +12,39 @@ const STATIC_CACHE = [
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'
 ];
 
-// Install event - cache static resources
+// Install event
 self.addEventListener('install', event => {
   console.log('Service Worker: Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Service Worker: Caching static resources');
-        return cache.addAll(STATIC_CACHE);
+        return cache.addAll(STATIC_RESOURCES);
       })
       .then(() => self.skipWaiting())
   );
 });
 
-// Fetch event - handle all requests
+// Fetch event - handle API and static requests
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   
-  // Handle API requests
-  if (url.pathname.startsWith('/api/')) {
+  // Handle API requests (including cross-origin)
+  if (url.pathname.includes('/api/') || url.hostname.includes('render.com')) {
     event.respondWith(
-      caches.match(event.request)
+      fetch(event.request)
         .then(response => {
-          if (response) {
-            console.log('Serving API from cache:', event.request.url);
-            return response;
+          if (response.ok) {
+            console.log('Caching API response:', event.request.url);
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then(cache => cache.put(event.request, responseToCache));
           }
-          
-          return fetch(event.request)
-            .then(response => {
-              if (response.ok) {
-                const responseToCache = response.clone();
-                caches.open(CACHE_NAME)
-                  .then(cache => {
-                    console.log('Caching API response:', event.request.url);
-                    cache.put(event.request, responseToCache);
-                  });
-              }
-              return response;
-            })
-            .catch(() => {
-              console.log('API request failed, serving from cache:', event.request.url);
-              return caches.match(event.request);
-            });
+          return response;
+        })
+        .catch(() => {
+          console.log('API failed, serving from cache:', event.request.url);
+          return caches.match(event.request);
         })
     );
     return;
@@ -65,13 +55,13 @@ self.addEventListener('fetch', event => {
     caches.match(event.request)
       .then(response => {
         if (response) {
-          console.log('Serving static from cache:', event.request.url);
+          console.log('Serving from cache:', event.request.url);
           return response;
         }
         
         return fetch(event.request)
           .then(response => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
+            if (!response || response.status !== 200) {
               return response;
             }
             
@@ -85,14 +75,14 @@ self.addEventListener('fetch', event => {
             return response;
           })
           .catch(() => {
-            console.log('Static request failed, serving from cache:', event.request.url);
+            console.log('Request failed, serving from cache:', event.request.url);
             return caches.match(event.request);
           });
       })
   );
 });
 
-// Activate event - clean old caches
+// Activate event
 self.addEventListener('activate', event => {
   console.log('Service Worker: Activating...');
   event.waitUntil(
