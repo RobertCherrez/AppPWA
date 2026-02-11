@@ -16,9 +16,9 @@ public class DataInitializer implements CommandLineRunner {
     
     @Override
     public void run(String... args) throws Exception {
-        if (productRepository.count() == 0) {
-            initializeProducts();
-        }
+        // Limpiar productos existentes para asegurar imágenes correctas
+        productRepository.deleteAll();
+        initializeProducts();
     }
     
     private void initializeProducts() {
