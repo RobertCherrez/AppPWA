@@ -52,7 +52,7 @@ const ProductList: React.FC = () => {
           <div key={product.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
             <div className="card h-100 shadow-sm">
               <img
-                src={`/images/${product.imageUrl.split('/').pop()}`}
+                src={`/images/${product.imageUrl.replace('/images/', '')}`}
                 alt={product.name}
                 className="card-img-top"
                 style={{ height: '200px', objectFit: 'cover' }}
