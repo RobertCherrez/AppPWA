@@ -13,6 +13,7 @@ const Checkout: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [isOfflineOrder, setIsOfflineOrder] = useState(false);
   const { state, clearCart } = useCart();
   const navigate = useNavigate();
 
@@ -42,17 +43,20 @@ const Checkout: React.FC = () => {
       // Verificar si es una respuesta offline del Service Worker
       if (response && typeof response === 'object' && 'offline' in response) {
         setOrderPlaced(true);
+        setIsOfflineOrder(true);
         clearCart();
         // Mostrar mensaje especial para offline
         return;
       }
       
       setOrderPlaced(true);
+      setIsOfflineOrder(false);
       clearCart();
     } catch (err: any) {
       // Verificar si es un error offline
       if (err.message && err.message.includes('offline')) {
         setOrderPlaced(true);
+        setIsOfflineOrder(true);
         clearCart();
         return;
       }
@@ -88,10 +92,14 @@ const Checkout: React.FC = () => {
           <h1 className="display-4 fw-bold mb-4">¡Pedido Realizado con Éxito!</h1>
           <p className="text-muted mb-4">
             Gracias por tu pedido. Recibirás un correo de confirmación shortly.
-            <br />
-            <small className="text-info">
-              Tu pedido está guardado y se procesará cuando haya conexión a internet.
-            </small>
+            {isOfflineOrder && (
+              <>
+                <br />
+                <small className="text-info">
+                  Tu pedido está guardado y se procesará cuando haya conexión a internet.
+                </small>
+              </>
+            )}
           </p>
           <button
             onClick={() => navigate('/')}
