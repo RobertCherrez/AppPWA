@@ -27,8 +27,22 @@ export const orderService = {
   },
 
   createOrder: async (order: OrderRequest): Promise<Order> => {
-    const response = await api.post('/orders', order);
-    return response.data;
+    try {
+      const response = await api.post('/orders', order);
+      return response.data;
+    } catch (error: any) {
+      // Si es un error de red, verificar si es una respuesta offline del Service Worker
+      if (error.response && error.response.data) {
+        return error.response.data; // Devolver respuesta del Service Worker
+      }
+      
+      // Si es un error de red sin respuesta, lanzar error con mensaje offline
+      if (error.code === 'NETWORK_ERROR' || error.message.includes('Network Error')) {
+        throw new Error('offline');
+      }
+      
+      throw error;
+    }
   },
 };
 

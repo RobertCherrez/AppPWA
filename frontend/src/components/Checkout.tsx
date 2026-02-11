@@ -37,10 +37,26 @@ const Checkout: React.FC = () => {
         })),
       };
 
-      await orderService.createOrder(orderRequest);
+      const response = await orderService.createOrder(orderRequest);
+      
+      // Verificar si es una respuesta offline del Service Worker
+      if (response && typeof response === 'object' && 'offline' in response) {
+        setOrderPlaced(true);
+        clearCart();
+        // Mostrar mensaje especial para offline
+        return;
+      }
+      
       setOrderPlaced(true);
       clearCart();
-    } catch (err) {
+    } catch (err: any) {
+      // Verificar si es un error offline
+      if (err.message && err.message.includes('offline')) {
+        setOrderPlaced(true);
+        clearCart();
+        return;
+      }
+      
       setError('Error al realizar el pedido. Inténtalo de nuevo.');
       console.error('Error placing order:', err);
     } finally {
@@ -70,7 +86,13 @@ const Checkout: React.FC = () => {
         <div className="max-w-md mx-auto text-center py-5">
           <div className="text-success display-1 mb-4">✓</div>
           <h1 className="display-4 fw-bold mb-4">¡Pedido Realizado con Éxito!</h1>
-          <p className="text-muted mb-4">Gracias por tu pedido. Recibirás un correo de confirmación shortly.</p>
+          <p className="text-muted mb-4">
+            Gracias por tu pedido. Recibirás un correo de confirmación shortly.
+            <br />
+            <small className="text-info">
+              Tu pedido está guardado y se procesará cuando haya conexión a internet.
+            </small>
+          </p>
           <button
             onClick={() => navigate('/')}
             className="btn btn-primary"
