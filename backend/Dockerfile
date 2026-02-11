@@ -1,18 +1,19 @@
-# Imagen base con Java
-FROM eclipse-temurin:21-jdk
+# ===== BUILD STAGE =====
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 
-# Carpeta de trabajo
 WORKDIR /app
-
-# Copiar proyecto
 COPY . .
 
-# Dar permisos y construir
-RUN chmod +x mvnw
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
-# Exponer puerto Spring Boot
+
+# ===== RUN STAGE =====
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Ejecutar jar
-CMD ["java","-jar","target/*.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
