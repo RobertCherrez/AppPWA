@@ -52,10 +52,15 @@ const ProductList: React.FC = () => {
           <div key={product.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
             <div className="card h-100 shadow-sm">
               <img
-                src={product.imageUrl.startsWith('http') ? product.imageUrl : `https://apppwa-1.onrender.com${product.imageUrl}`}
+                src={product.imageUrl.startsWith('http') ? product.imageUrl : `https://apppwa-1.onrender.com/api/products/images${product.imageUrl}`}
                 alt={product.name}
                 className="card-img-top"
                 style={{ height: '200px', objectFit: 'cover' }}
+                onError={(e) => {
+                  // Fallback al endpoint original
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://apppwa-1.onrender.com${product.imageUrl}`;
+                }}
               />
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{product.name}</h5>
