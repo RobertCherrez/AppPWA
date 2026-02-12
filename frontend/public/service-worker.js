@@ -10,7 +10,7 @@ const OFFLINE_CACHE = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css',
-  // Cache backend images with full URLs
+  // Cache backend images with CORRECT filenames
   'https://apppwa-1.onrender.com/images/laptop.jpg',
   'https://apppwa-1.onrender.com/images/mouse.jpg',
   'https://apppwa-1.onrender.com/images/teclado.jpg',
