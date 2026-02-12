@@ -1,115 +1,97 @@
-// Simple service worker - cache for offline, don't interfere online
-const CACHE_NAME = 'ecommerce-pwa-complete';
+// Service Worker con cache-first strategy completa
+const CACHE_NAME = 'ecommerce-pwa-v1';
 
-// Cache everything needed for offline (sin imágenes)
+// Cache todo lo necesario para offline
 const OFFLINE_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.ico',
   '/static/css/main.358c1081.css',
-  '/static/js/main.56eac9c0.js',
+  '/static/js/main.28b48d5d.js',
   '/static/js/453.20359781.chunk.js',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'
 ];
 
-// Install event - cache everything
+// Install - cache todo inmediatamente
 self.addEventListener('install', event => {
-  console.log('Service Worker: Installing...');
+  console.log('SW: Installing and caching all files...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Service Worker: Caching for offline');
+        console.log('SW: Adding all files to cache');
         return cache.addAll(OFFLINE_CACHE);
       })
       .then(() => {
-        console.log('Service Worker: Installation complete, skipping waiting');
+        console.log('SW: All files cached, skipping waiting');
         return self.skipWaiting();
       })
   );
 });
 
-// Fetch event - only cache when offline
-self.addEventListener('fetch', event => {
-  // Handle POST requests (checkout)
-  if (event.request.method === 'POST') {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          console.log('POST request successful:', event.request.url);
-          return response;
+// Activate - limpiar caches viejos y tomar control
+self.addEventListener('activate', event => {
+  console.log('SW: Activating...');
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('SW: Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
         })
-        .catch(() => {
-          console.log('POST request failed offline:', event.request.url);
-          // Return a mock success response for offline checkout
-          const offlineResponse = {
-            success: false,
-            message: 'Pedido guardado localmente. Se sincronizará cuando haya conexión.',
-            offline: true
-          };
-          
-          return new Response(JSON.stringify(offlineResponse), {
-            status: 200,
-            statusText: 'OK',
-            headers: {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-              'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-            }
-          });
-        })
-    );
-    return;
-  }
-  
-  // For GET requests, only use cache when offline
-  event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        // If online, return response and cache it
-        if (response && response.status === 200) {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              console.log('Caching for offline:', event.request.url);
-              cache.put(event.request, responseToCache);
-            });
-        }
-        return response;
-      })
-      .catch(() => {
-        // If offline, try cache
-        console.log('Offline, serving from cache:', event.request.url);
-        return caches.match(event.request);
-      })
+      );
+    }).then(() => {
+      console.log('SW: Taking control of all pages');
+      return self.clients.claim();
+    })
   );
 });
 
-// Activate event - clean old caches and take control
-self.addEventListener('activate', event => {
-  console.log('Service Worker: Activating...');
-  event.waitUntil(
-    caches.keys()
-      .then(cacheNames => {
-        console.log('Service Worker: Cleaning old caches');
-        return Promise.all(
-          cacheNames.map(cacheName => {
-            if (cacheName !== CACHE_NAME) {
-              console.log('Service Worker: Deleting old cache:', cacheName);
-              return caches.delete(cacheName);
+// Fetch - cache-first strategy
+self.addEventListener('fetch', event => {
+  console.log('SW: Fetching:', event.request.url);
+  
+  // Solo manejar requests GET
+  if (event.request.method !== 'GET') {
+    return;
+  }
+  
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        // Si está en cache, retornarlo
+        if (response) {
+          console.log('SW: Serving from cache:', event.request.url);
+          return response;
+        }
+        
+        // Si no está en cache, intentar red
+        console.log('SW: Not in cache, fetching from network:', event.request.url);
+        return fetch(event.request)
+          .then(response => {
+            // Si la respuesta es buena, cachearla
+            if (response.status === 200) {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME)
+                .then(cache => {
+                  console.log('SW: Caching new resource:', event.request.url);
+                  cache.put(event.request, responseToCache);
+                });
             }
+            return response;
           })
-        );
-      })
-      .then(() => {
-        console.log('Service Worker: Taking control of all clients');
-        return self.clients.claim();
-      })
-      .then(() => {
-        console.log('Service Worker: Activation complete');
+          .catch(() => {
+            // Si falla la red, servir página offline
+            console.log('SW: Network failed, serving offline page');
+            if (event.request.destination === 'document') {
+              return caches.match('/index.html');
+            }
+            return new Response('Offline - No connection', { status: 503 });
+          });
       })
   );
 });
