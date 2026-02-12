@@ -24,7 +24,10 @@ self.addEventListener('install', event => {
         console.log('Service Worker: Caching for offline');
         return cache.addAll(OFFLINE_CACHE);
       })
-      .then(() => self.skipWaiting())
+      .then(() => {
+        console.log('Service Worker: Installation complete, skipping waiting');
+        return self.skipWaiting();
+      })
   );
 });
 
@@ -85,21 +88,28 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Activate event - clean old caches
+// Activate event - clean old caches and take control
 self.addEventListener('activate', event => {
   console.log('Service Worker: Activating...');
   event.waitUntil(
     caches.keys()
       .then(cacheNames => {
+        console.log('Service Worker: Cleaning old caches');
         return Promise.all(
           cacheNames.map(cacheName => {
             if (cacheName !== CACHE_NAME) {
-              console.log('Deleting old cache:', cacheName);
+              console.log('Service Worker: Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       })
-      .then(() => self.clients.claim())
+      .then(() => {
+        console.log('Service Worker: Taking control of all clients');
+        return self.clients.claim();
+      })
+      .then(() => {
+        console.log('Service Worker: Activation complete');
+      })
   );
 });

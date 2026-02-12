@@ -22,16 +22,36 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
-// Register service worker for PWA
-if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+// Register service worker for PWA - forzar registro in producción
+if ('serviceWorker' in navigator) {
+  const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+  
+  // Registrar inmediatamente sin esperar a load
+  navigator.serviceWorker.register(swUrl)
+    .then(registration => {
+      console.log('Service worker registered successfully: ', registration);
+      
+      // Forzar activación inmediata
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+      
+      if (registration.active) {
+        console.log('Service worker is active');
+      }
+    })
+    .catch(error => {
+      console.error('Service worker registration failed:', error);
+    });
+    
+  // También registrar en load como fallback
   window.addEventListener('load', () => {
-    const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
     navigator.serviceWorker.register(swUrl)
       .then(registration => {
-        console.log('Service worker registered successfully: ', registration);
+        console.log('Service worker registered on load: ', registration);
       })
       .catch(error => {
-        console.error('Service worker registration failed:', error);
+        console.error('Service worker registration failed on load:', error);
       });
   });
 }

@@ -1,24 +1,18 @@
 // Simple service worker - cache for offline, don't interfere online
 const CACHE_NAME = 'ecommerce-pwa-complete';
 
-// Cache everything needed for offline
+// Cache everything needed for offline (sin imágenes)
 const OFFLINE_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.ico',
+  '/static/css/main.358c1081.css',
+  '/static/js/main.56eac9c0.js',
+  '/static/js/453.20359781.chunk.js',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
-  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css',
-  // Cache local frontend images
-  '/images/laptop.jpg',
-  '/images/mouse.jpg',
-  '/images/teclado.jpg',
-  '/images/monitor.jpg',
-  '/images/hub.jpg',
-  '/images/webcam.jpg',
-  '/images/lampara.jpg',
-  '/images/soporte.jpg'
+  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'
 ];
 
 // Install event - cache everything
@@ -30,7 +24,10 @@ self.addEventListener('install', event => {
         console.log('Service Worker: Caching for offline');
         return cache.addAll(OFFLINE_CACHE);
       })
-      .then(() => self.skipWaiting())
+      .then(() => {
+        console.log('Service Worker: Installation complete, skipping waiting');
+        return self.skipWaiting();
+      })
   );
 });
 
@@ -91,21 +88,28 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Activate event - clean old caches
+// Activate event - clean old caches and take control
 self.addEventListener('activate', event => {
   console.log('Service Worker: Activating...');
   event.waitUntil(
     caches.keys()
       .then(cacheNames => {
+        console.log('Service Worker: Cleaning old caches');
         return Promise.all(
           cacheNames.map(cacheName => {
             if (cacheName !== CACHE_NAME) {
-              console.log('Deleting old cache:', cacheName);
+              console.log('Service Worker: Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       })
-      .then(() => self.clients.claim())
+      .then(() => {
+        console.log('Service Worker: Taking control of all clients');
+        return self.clients.claim();
+      })
+      .then(() => {
+        console.log('Service Worker: Activation complete');
+      })
   );
 });
