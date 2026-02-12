@@ -31,10 +31,10 @@ public class WebConfig implements WebMvcConfigurer {
     
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        // Configurar para servir imágenes desde /images/** usando file system
+        // Configurar para servir imágenes desde /images/** (estado original)
         System.out.println("CONFIGURANDO RESOURCE HANDLER PARA /images/**");
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:src/main/resources/static/images/");
-        System.out.println("RESOURCE HANDLER CONFIGURADO: /images/** -> file:src/main/resources/static/images/");
+                .addResourceLocations("classpath:/static/images/");
+        System.out.println("RESOURCE HANDLER CONFIGURADO: /images/** -> classpath:/static/images/");
     }
 }

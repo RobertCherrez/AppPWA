@@ -10,7 +10,7 @@ const OFFLINE_CACHE = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css',
-  // Cache backend images with CORRECT filenames and NEW endpoint
+  // Cache backend images with CORRECT filenames
   'https://apppwa-1.onrender.com/images/laptop.jpg',
   'https://apppwa-1.onrender.com/images/mouse.jpg',
   'https://apppwa-1.onrender.com/images/teclado.jpg',
@@ -18,16 +18,7 @@ const OFFLINE_CACHE = [
   'https://apppwa-1.onrender.com/images/hub.jpg',
   'https://apppwa-1.onrender.com/images/webcam.jpg',
   'https://apppwa-1.onrender.com/images/lampara.jpg',
-  'https://apppwa-1.onrender.com/images/soporte.jpg',
-  // NEW: Correct endpoint through API
-  'https://apppwa-1.onrender.com/api/images/laptop.jpg',
-  'https://apppwa-1.onrender.com/api/images/mouse.jpg',
-  'https://apppwa-1.onrender.com/api/images/teclado.jpg',
-  'https://apppwa-1.onrender.com/api/images/monitor.jpg',
-  'https://apppwa-1.onrender.com/api/images/hub.jpg',
-  'https://apppwa-1.onrender.com/api/images/webcam.jpg',
-  'https://apppwa-1.onrender.com/api/images/lampara.jpg',
-  'https://apppwa-1.onrender.com/api/images/soporte.jpg'
+  'https://apppwa-1.onrender.com/images/soporte.jpg'
 ];
 
 // Install event - cache everything
