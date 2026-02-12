@@ -26,16 +26,16 @@ public class ImageController {
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         System.out.println("🖼️ ImageController: Solicitando imagen: " + filename);
         try {
-            // Intentar con ClassPathResource
-            Resource resource = new ClassPathResource("static/images/" + filename);
+            // CORRECTO: ClassPathResource busca en classpath:/images/
+            Resource resource = new ClassPathResource("images/" + filename);
             if (resource.exists() && resource.isReadable()) {
-                System.out.println("✅ ImageController: Imagen encontrada: " + filename);
+                System.out.println("✅ ImageController: Imagen encontrada en classpath: " + filename);
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
                         .body(resource);
             } else {
-                System.out.println("❌ ImageController: Imagen no encontrada: " + filename);
+                System.out.println("❌ ImageController: Imagen no encontrada en classpath: " + filename);
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
