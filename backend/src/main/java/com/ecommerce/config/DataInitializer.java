@@ -39,7 +39,7 @@ public class DataInitializer implements CommandLineRunner {
             new Product(null, "Lámpara de Escritorio", "Lámpara LED de escritorio con brillo ajustable", 
                        new BigDecimal("34.99"), 40, "/images/lampara.jpg"),
             new Product(null, "Soporte para Teléfono", "Soporte ajustable para teléfono de escritorio", 
-                       new BigDecimal("19.99"), 60, "/images/soporte-telefono.jpg")
+                       new BigDecimal("19.99"), 60, "/images/soporte.jpg")
         };
         
         for (Product product : products) {
