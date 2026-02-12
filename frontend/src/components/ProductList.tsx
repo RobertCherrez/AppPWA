@@ -52,7 +52,7 @@ const ProductList: React.FC = () => {
           <div key={product.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
             <div className="card h-100 shadow-sm">
               <img
-                src={product.imageUrl.startsWith('http') ? product.imageUrl : `/images/${product.imageUrl.replace('/images/', '')}`}
+                src={product.imageUrl.startsWith('http') ? product.imageUrl : `https://apppwa-1.onrender.com${product.imageUrl}`}
                 alt={product.name}
                 className="card-img-top"
                 style={{ height: '200px', objectFit: 'cover' }}
