@@ -16,9 +16,16 @@ public class DataInitializer implements CommandLineRunner {
     
     @Override
     public void run(String... args) throws Exception {
-        // Limpiar productos existentes para asegurar imágenes correctas
+        // FORZAR limpieza completa para asegurar reinicio con nombres correctos
+        System.out.println("LIMPIANDO todos los productos existentes...");
         productRepository.deleteAll();
+        System.out.println("Productos eliminados: " + productRepository.count());
+        
+        // Pequeña pausa para asegurar limpieza
+        Thread.sleep(1000);
+        
         initializeProducts();
+        System.out.println("Productos reinicializados con nombres correctos: " + productRepository.count());
     }
     
     private void initializeProducts() {
