@@ -2,6 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import { productService } from '../services/api';
 import { useCart } from '../contexts/CartContext';
+import './ProductList.css';
+
+// Gradientes para cada producto
+const getProductGradient = (productName: string) => {
+  const gradients: { [key: string]: string } = {
+    'Laptop Pro': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    'Mouse Inalámbrico': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    'Teclado Mecánico': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    'Monitor 4K': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    'Hub USB-C': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    'Webcam HD': 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+    'Lámpara de Escritorio': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+    'Soporte para Teléfono': 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
+  };
+  return gradients[productName] || 'linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%)';
+};
+
+// Iconos simples con emoji
+const getProductIcon = (productName: string) => {
+  const icons: { [key: string]: string } = {
+    'Laptop Pro': '💻',
+    'Mouse Inalámbrico': '🖱️',
+    'Teclado Mecánico': '⌨️',
+    'Monitor 4K': '🖥️',
+    'Hub USB-C': '🔌',
+    'Webcam HD': '📹',
+    'Lámpara de Escritorio': '💡',
+    'Soporte para Teléfono': '📱'
+  };
+  return icons[productName] || '📦';
+};
 
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -51,12 +82,27 @@ const ProductList: React.FC = () => {
         {products.map((product) => (
           <div key={product.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
             <div className="card h-100 shadow-sm">
-              <img
-                src={product.imageUrl.startsWith('http') ? product.imageUrl : `/${product.imageUrl.replace('/images/', 'images/')}`}
-                alt={product.name}
-                className="card-img-top"
-                style={{ height: '200px', objectFit: 'cover' }}
-              />
+              <div 
+                className="card-img-top d-flex align-items-center justify-content-center position-relative overflow-hidden"
+                style={{ 
+                  height: '200px',
+                  background: getProductGradient(product.name),
+                  color: 'white',
+                  fontSize: '4rem',
+                  fontWeight: 'bold',
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div 
+                  className="position-absolute w-100 h-100"
+                  style={{
+                    background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
+                    animation: 'shimmer 2s infinite'
+                  }}
+                />
+                <span className="position-relative z-1">{getProductIcon(product.name)}</span>
+              </div>
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{product.name}</h5>
                 <p className="card-text text-muted small">{product.description}</p>
