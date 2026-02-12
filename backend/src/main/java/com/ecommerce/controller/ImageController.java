@@ -20,18 +20,18 @@ public class ImageController {
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         System.out.println("🖼️ ImageController: Solicitando imagen: " + filename);
         try {
-            // USAR FileSystemResource para producción
-            File imageFile = new File("src/main/resources/static/images/" + filename);
+            // USAR FileSystemResource con ruta absoluta para producción
+            File imageFile = new File("/opt/render/project/src/main/resources/static/images/" + filename);
             Resource resource = new FileSystemResource(imageFile);
             
             if (resource.exists() && resource.isReadable()) {
-                System.out.println("✅ ImageController: Imagen encontrada en filesystem: " + filename);
+                System.out.println("✅ ImageController: Imagen encontrada en filesystem absoluto: " + filename);
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
                         .body(resource);
             } else {
-                System.out.println("❌ ImageController: Imagen no encontrada en filesystem: " + filename);
+                System.out.println("❌ ImageController: Imagen no encontrada en filesystem absoluto: " + filename);
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
