@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
         "http://localhost:3000",
         "http://localhost:3001",
         "http://localhost:3002",
-        "https://app-pwa-jet.vercel.app"
+        "https://app-pwa-green.vercel.app/"
 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
