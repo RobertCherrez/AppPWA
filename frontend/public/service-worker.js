@@ -1,4 +1,4 @@
-// Ultimate service worker with POST support for checkout
+// Simple service worker - cache for offline, don't interfere online
 const CACHE_NAME = 'ecommerce-pwa-complete';
 
 // Cache everything needed for offline
@@ -10,7 +10,7 @@ const OFFLINE_CACHE = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css',
-  // Cache all local images from frontend
+  // Cache local images
   '/images/laptop.jpg',
   '/images/mouse.jpg',
   '/images/teclado.jpg',
@@ -34,10 +34,8 @@ self.addEventListener('install', event => {
   );
 });
 
-// Fetch event - handle both GET and POST
+// Fetch event - only cache when offline
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-  
   // Handle POST requests (checkout)
   if (event.request.method === 'POST') {
     event.respondWith(
@@ -70,46 +68,25 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // Handle GET requests - cache first for images, network first for API
+  // For GET requests, only use cache when offline
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then(response => {
-        // For images, always try cache first
-        if (event.request.url.includes('/images/') && response) {
-          console.log('Serving image from cache:', event.request.url);
-          return response;
-        }
-        
-        // For other requests, try network first
-        if (!response) {
-          return fetch(event.request)
-            .then(response => {
-              // Cache successful responses
-              if (response && response.status === 200) {
-                const responseToCache = response.clone();
-                caches.open(CACHE_NAME)
-                  .then(cache => {
-                    console.log('Caching for offline:', event.request.url);
-                    cache.put(event.request, responseToCache);
-                  });
-              }
-              return response;
-            })
-            .catch(() => {
-              // Network failed, serve index.html for navigation
-              if (event.request.mode === 'navigate') {
-                console.log('Navigation failed, serving index.html from cache');
-                return caches.match('/index.html');
-              }
-              
-              // For other requests, try cache one more time
-              console.log('Request failed, trying cache:', event.request.url);
-              return caches.match(event.request);
+        // If online, return response and cache it
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              console.log('Caching for offline:', event.request.url);
+              cache.put(event.request, responseToCache);
             });
         }
-        
-        // If in cache, return it
         return response;
+      })
+      .catch(() => {
+        // If offline, try cache
+        console.log('Offline, serving from cache:', event.request.url);
+        return caches.match(event.request);
       })
   );
 });
