@@ -22,7 +22,7 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
-// Register service worker for PWA - forzar registro in producción
+// Register service worker for PWA - forzar registro en producción
 if ('serviceWorker' in navigator) {
   const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
   

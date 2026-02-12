@@ -14,11 +14,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "https://glaringly-preadministrative-phuong.ngrok-free.dev"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "https://app-pwa-jet.vercel.app"})
 public class OrderController {
     
     @Autowired
@@ -50,8 +49,10 @@ public class OrderController {
             BigDecimal totalAmount = BigDecimal.ZERO;
             
             for (Map<String, Object> item : items) {
-                Long productId = Long.valueOf(item.get("productId").toString());
+                Long productId = ((Number) item.get("productId")).longValue();
                 Integer quantity = (Integer) item.get("quantity");
+                
+                System.out.println("🛒 Procesando item: productId=" + productId + ", quantity=" + quantity);
                 
                 Product product = productRepository.findById(productId)
                         .orElseThrow(() -> new RuntimeException("Product not found: " + productId));

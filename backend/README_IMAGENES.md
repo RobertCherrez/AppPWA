@@ -15,14 +15,14 @@
    ```
 
 2. **Agrega tus imágenes (nomenclatura sugerida):**
-   - `laptop-pro.jpg`
-   - `mouse-inalambrico.jpg`
-   - `teclado-mecanico.jpg`
-   - `monitor-4k.jpg`
-   - `hub-usb-c.jpg`
-   - `webcam-hd.jpg`
-   - `lampara-escritorio.jpg`
-   - `soporte-telefono.jpg`
+   - `laptop.jpg`
+   - `mouse.jpg`
+   - `teclado.jpg`
+   - `monitor.jpg`
+   - `hub.jpg`
+   - `webcam.jpg`
+   - `lampara.jpg`
+   - `soporte.jpg`
 
 3. **Actualiza las URLs en DataInitializer.java:**
    ```java

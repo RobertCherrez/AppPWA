@@ -16,16 +16,21 @@ public class DataInitializer implements CommandLineRunner {
     
     @Override
     public void run(String... args) throws Exception {
+        System.out.println("=================================");
+        System.out.println("🔄 INICIANDO DATA INITIALIZER");
+        System.out.println("=================================");
+        
         // FORZAR limpieza completa para asegurar reinicio con nombres correctos
-        System.out.println("LIMPIANDO todos los productos existentes...");
+        System.out.println("🗑️ LIMPIANDO todos los productos existentes...");
         productRepository.deleteAll();
-        System.out.println("Productos eliminados: " + productRepository.count());
+        System.out.println("🗑️ Productos eliminados: " + productRepository.count());
         
         // Pequeña pausa para asegurar limpieza
         Thread.sleep(1000);
         
         initializeProducts();
-        System.out.println("Productos reinicializados con nombres correctos: " + productRepository.count());
+        System.out.println("✅ Productos reinicializados con nombres correctos: " + productRepository.count());
+        System.out.println("=================================");
     }
     
     private void initializeProducts() {
@@ -49,8 +54,10 @@ public class DataInitializer implements CommandLineRunner {
                        new BigDecimal("19.99"), 60, "/images/soporte.jpg")
         };
         
+        System.out.println("💾 Guardando " + products.length + " productos en la base de datos...");
         for (Product product : products) {
             productRepository.save(product);
+            System.out.println("✅ Producto guardado: " + product.getName() + " -> " + product.getImageUrl());
         }
         
         System.out.println("¡Productos de ejemplo inicializados exitosamente!");
