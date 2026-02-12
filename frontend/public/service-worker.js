@@ -19,15 +19,15 @@ const OFFLINE_CACHE = [
   'https://apppwa-1.onrender.com/images/webcam.jpg',
   'https://apppwa-1.onrender.com/images/lampara.jpg',
   'https://apppwa-1.onrender.com/images/soporte.jpg',
-  // NEW: Fallback endpoint through API
-  'https://apppwa-1.onrender.com/api/products/images/laptop.jpg',
-  'https://apppwa-1.onrender.com/api/products/images/mouse.jpg',
-  'https://apppwa-1.onrender.com/api/products/images/teclado.jpg',
-  'https://apppwa-1.onrender.com/api/products/images/monitor.jpg',
-  'https://apppwa-1.onrender.com/api/products/images/hub.jpg',
-  'https://apppwa-1.onrender.com/api/products/images/webcam.jpg',
-  'https://apppwa-1.onrender.com/api/products/images/lampara.jpg',
-  'https://apppwa-1.onrender.com/api/products/images/soporte.jpg'
+  // NEW: Correct endpoint through API
+  'https://apppwa-1.onrender.com/api/images/laptop.jpg',
+  'https://apppwa-1.onrender.com/api/images/mouse.jpg',
+  'https://apppwa-1.onrender.com/api/images/teclado.jpg',
+  'https://apppwa-1.onrender.com/api/images/monitor.jpg',
+  'https://apppwa-1.onrender.com/api/images/hub.jpg',
+  'https://apppwa-1.onrender.com/api/images/webcam.jpg',
+  'https://apppwa-1.onrender.com/api/images/lampara.jpg',
+  'https://apppwa-1.onrender.com/api/images/soporte.jpg'
 ];
 
 // Install event - cache everything
