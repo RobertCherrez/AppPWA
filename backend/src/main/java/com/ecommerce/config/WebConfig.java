@@ -1,6 +1,7 @@
 package com.ecommerce.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -9,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/api/**")
 .allowedOrigins(
         "http://localhost:3000",
@@ -29,11 +30,11 @@ public class WebConfig implements WebMvcConfigurer {
     }
     
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Configurar para servir imágenes desde /images/**
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+        // Configurar para servir imágenes desde /images/** usando file system
         System.out.println("CONFIGURANDO RESOURCE HANDLER PARA /images/**");
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("classpath:/static/images/");
-        System.out.println("RESOURCE HANDLER CONFIGURADO: /images/** -> classpath:/static/images/");
+                .addResourceLocations("file:src/main/resources/static/images/");
+        System.out.println("RESOURCE HANDLER CONFIGURADO: /images/** -> file:src/main/resources/static/images/");
     }
 }
