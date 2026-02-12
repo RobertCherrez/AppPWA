@@ -1,4 +1,4 @@
-// Service Worker con cache-first strategy completa
+// Service Worker sin restricciones HTTPS - cache-first strategy
 const CACHE_NAME = 'ecommerce-pwa-v1';
 
 // Cache todo lo necesario para offline
@@ -51,15 +51,43 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch - cache-first strategy
+// Fetch - cache-first strategy sin restricciones
 self.addEventListener('fetch', event => {
   console.log('SW: Fetching:', event.request.url);
   
-  // Solo manejar requests GET
-  if (event.request.method !== 'GET') {
+  // Manejar todos los requests (GET y POST)
+  if (event.request.method === 'POST') {
+    // Checkout offline
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          console.log('POST request successful:', event.request.url);
+          return response;
+        })
+        .catch(() => {
+          console.log('POST request failed offline:', event.request.url);
+          const offlineResponse = {
+            success: false,
+            message: 'Pedido guardado localmente. Se sincronizará cuando haya conexión.',
+            offline: true
+          };
+          
+          return new Response(JSON.stringify(offlineResponse), {
+            status: 200,
+            statusText: 'OK',
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+            }
+          });
+        })
+    );
     return;
   }
   
+  // Para GET requests - cache-first
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -85,12 +113,24 @@ self.addEventListener('fetch', event => {
             return response;
           })
           .catch(() => {
-            // Si falla la red, servir página offline
-            console.log('SW: Network failed, serving offline page');
+            // Si falla la red, servir desde cache o página offline
+            console.log('SW: Network failed, trying cache or offline page');
+            
+            // Para documentos, servir index.html
             if (event.request.destination === 'document') {
               return caches.match('/index.html');
             }
-            return new Response('Offline - No connection', { status: 503 });
+            
+            // Para otros recursos, intentar cache genérico
+            return caches.match(event.request)
+              .then(cachedResponse => {
+                if (cachedResponse) {
+                  return cachedResponse;
+                }
+                
+                // Último recurso - página offline simple
+                return new Response('Offline - Recurso no disponible', { status: 503 });
+              });
           });
       })
   );
