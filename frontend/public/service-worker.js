@@ -70,41 +70,46 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // Handle GET requests
+  // Handle GET requests - cache first for images, network first for API
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Always try cache first
-        if (response) {
-          console.log('Serving from cache:', event.request.url);
+        // For images, always try cache first
+        if (event.request.url.includes('/images/') && response) {
+          console.log('Serving image from cache:', event.request.url);
           return response;
         }
         
-        // If not in cache, try network
-        return fetch(event.request)
-          .then(response => {
-            // Cache successful responses
-            if (response && response.status === 200) {
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME)
-                .then(cache => {
-                  console.log('Caching for offline:', event.request.url);
-                  cache.put(event.request, responseToCache);
-                });
-            }
-            return response;
-          })
-          .catch(() => {
-            // Network failed, serve index.html for navigation
-            if (event.request.mode === 'navigate') {
-              console.log('Navigation failed, serving index.html from cache');
-              return caches.match('/index.html');
-            }
-            
-            // For other requests, try cache one more time
-            console.log('Request failed, trying cache:', event.request.url);
-            return caches.match(event.request);
-          });
+        // For other requests, try network first
+        if (!response) {
+          return fetch(event.request)
+            .then(response => {
+              // Cache successful responses
+              if (response && response.status === 200) {
+                const responseToCache = response.clone();
+                caches.open(CACHE_NAME)
+                  .then(cache => {
+                    console.log('Caching for offline:', event.request.url);
+                    cache.put(event.request, responseToCache);
+                  });
+              }
+              return response;
+            })
+            .catch(() => {
+              // Network failed, serve index.html for navigation
+              if (event.request.mode === 'navigate') {
+                console.log('Navigation failed, serving index.html from cache');
+                return caches.match('/index.html');
+              }
+              
+              // For other requests, try cache one more time
+              console.log('Request failed, trying cache:', event.request.url);
+              return caches.match(event.request);
+            });
+        }
+        
+        // If in cache, return it
+        return response;
       })
   );
 });
