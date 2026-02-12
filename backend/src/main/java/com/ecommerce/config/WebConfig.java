@@ -20,6 +20,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
+        
+        // CRÍTICO: Agregar CORS para imágenes estáticas
+        registry.addMapping("/images/**")
+                .allowedOrigins("*")
+                .allowedMethods("GET", "OPTIONS")
+                .allowedHeaders("*");
     }
     
     @Override
