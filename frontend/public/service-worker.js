@@ -1,24 +1,18 @@
 // Simple service worker - cache for offline, don't interfere online
 const CACHE_NAME = 'ecommerce-pwa-complete';
 
-// Cache everything needed for offline
+// Cache everything needed for offline (sin imágenes)
 const OFFLINE_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.ico',
+  '/static/css/main.358c1081.css',
+  '/static/js/main.56eac9c0.js',
+  '/static/js/453.20359781.chunk.js',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
-  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css',
-  // Cache local frontend images
-  '/images/laptop.jpg',
-  '/images/mouse.jpg',
-  '/images/teclado.jpg',
-  '/images/monitor.jpg',
-  '/images/hub.jpg',
-  '/images/webcam.jpg',
-  '/images/lampara.jpg',
-  '/images/soporte.jpg'
+  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'
 ];
 
 // Install event - cache everything
